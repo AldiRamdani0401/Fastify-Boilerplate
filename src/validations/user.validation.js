@@ -9,4 +9,4 @@ const UserValidation = {
   }),
 };
 
-export default UserValidation; 
+export default UserValidation;

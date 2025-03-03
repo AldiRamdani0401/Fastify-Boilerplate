@@ -78,9 +78,10 @@ const ResponseHandler = async (
   error = null
 ) => {
   if (error && error.code) {
+    const statusCode = code || error.code;
     return response
-      .status(error.code)
-      .send({ errors: error.errors || (await getResponseMessage(error.code)) });
+      .status(statusCode)
+      .send({ errors: error.errors || (await getResponseMessage(statusCode)) });
   }
 
   if (!message) {
