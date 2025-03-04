@@ -6,7 +6,7 @@ const AuthController = {
     try {
       const user = request.body;
       await AuthService.Register(user);
-      ResponseHandler(response, { code:200, message: "Register Successfully" });
+      ResponseHandler(response, { code:201, message: "Register Successfully" });
     } catch (error) {
       return error;
     }
