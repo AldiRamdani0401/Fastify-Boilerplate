@@ -12,8 +12,20 @@ export const CreateUserRequest = (user) => ({
 });
 
 export const LoginUserRequest = (user) => ({
-  username: String(user.username),
-  password: String(user.password),
+  ...(user.username && { username: String(user.username) }),
+  ...(user.password && { password: String(user.password) }),
+});
+
+export const LogoutUserRequest = (user) => ({
+  ...(user.username && { username: String(user.username) }),
+  ...(user.token && { token: String(user.token) }),
+});
+
+export const ChangePasswordRequest = (user) => ({
+  ...(user.username && { username: String(user.username) }),
+  ...(user.token && { token: String(user.token) }),
+  ...(user.oldPassword && { oldPassword: String(user.oldPassword) }),
+  ...(user.newPassword && { newPassword: String(user.newPassword) }),
 });
 
 export const GetUserRequest = (userId) => String(userId);
@@ -28,8 +40,8 @@ export const UpdateUserRequest = (user) => ({
 // RESPONSE //
 export const UserResponse = (user) => ({
   username: String(user.username),
-  name: String(user.name),
-  token: String(user.token),
+  ...(user.name && { name: String(user.name) }),
+  ...(user.token && { token: String(user.token) }),
 });
 
 export const GetUserResponse = async (users) => {

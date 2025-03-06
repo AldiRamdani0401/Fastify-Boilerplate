@@ -30,6 +30,35 @@ const AuthValidation = {
       .max(13, "phone max length: 13")
       .optional(),
   }),
+  LOGOUT: z.object({
+    username: z.string().min(8).max(100),
+    token: z.string().length(100, {
+      message: { errors: "invalid or expired token", code: 401 },
+    }),
+  }),
+  CHANGE_PASSWORD: z.object({
+    username: z
+      .string({
+        message: { errors: "missing: username", code: 400 },
+      })
+      .min(8)
+      .max(100),
+    token: z.string().length(100, {
+      message: { errors: "invalid or expired token", code: 401 },
+    }),
+    oldPassword: z
+      .string({
+        message: { errors: "missing: old password", code: 400 },
+      })
+      .min(8, "password be at least 8 character long")
+      .max(100, "password be at least 8 character long"),
+    newPassword: z
+      .string({
+        message: { errors: "missing: new password", code: 400 },
+      })
+      .min(8, "new password be at least 8 character long")
+      .max(100, "new password be at least 8 character long"),
+  }),
 };
 
 export default AuthValidation;

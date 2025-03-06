@@ -78,7 +78,7 @@ const ResponseHandler = async (
   error = null
 ) => {
   if (error && error.code) {
-    const statusCode = code || error.code;
+    const statusCode = error.code || code;
     return response
       .status(statusCode)
       .send({ errors: error.errors || (await getResponseMessage(statusCode)) });
@@ -87,6 +87,7 @@ const ResponseHandler = async (
   if (!message) {
     message = await getResponseMessage(code);
   }
+
   return response.status(code).send({ message, datas });
 };
 

@@ -4,30 +4,41 @@ import HashHandler from "../handlers/hash.handler.js";
 import AuthValidation from "../validations/auth.validation.js";
 import TokenHandler from "../handlers/token.handler.js";
 
-import { CreateUserRequest, LoginUserRequest, UserResponse, UsersModel } from "../models/mysql/user.model.js";
-
+import {
+  ChangePasswordRequest,
+  CreateUserRequest,
+  LoginUserRequest,
+  LogoutUserRequest,
+  UserResponse,
+  UsersModel,
+} from "../models/mysql/user.model.js";
 
 const AuthService = {
   Register: async (user) => {
     user = CreateUserRequest(user);
-    const registerRequest = await Validation.validation(AuthValidation.REGISTER, user);
+    const registerRequest = await Validation.validation(
+      AuthValidation.REGISTER,
+      user
+    );
 
     console.info(registerRequest);
 
     const isDuplicate = await UsersModel.count({
-        where: {
-            username: registerRequest.username
-        }
+      where: {
+        username: registerRequest.username,
+      },
     });
 
     if (isDuplicate != 0) {
-        ThrowError(400, "username already exists");
+      ThrowError(400, "username already exists");
     }
 
-    registerRequest.password = await HashHandler.generate(registerRequest.password);
+    registerRequest.password = await HashHandler.generate(
+      registerRequest.password
+    );
 
     const result = await UsersModel.create({
-        data: registerRequest
+      data: registerRequest,
     });
 
     return result;
@@ -35,33 +46,79 @@ const AuthService = {
 
   Login: async (request) => {
     request = LoginUserRequest(request);
-    const loginRequest = await Validation.validation(AuthValidation.LOGIN, request);
+    request = await Validation.validation(AuthValidation.LOGIN, request);
 
     let user = await UsersModel.findUnique({
-        where: {
-            username: loginRequest.username
-        }
+      where: {
+        username: request.username,
+      },
     });
 
     if (!user) ThrowError(400, "Username or Password is wrong");
 
-    const isPasswordValid = await HashHandler.compare(loginRequest.password, user.password);
-
+    const isPasswordValid = await HashHandler.compare(
+      request.password,
+      user.password
+    );
 
     if (!isPasswordValid) ThrowError(400, "Username or Password is wrong");
 
     user = await UsersModel.update({
-        where: {
-            username: loginRequest.username
-        },
-        data: {
-            token: await TokenHandler.generate()
-        }
+      where: {
+        username: request.username,
+      },
+      data: {
+        token: await TokenHandler.generate(),
+      },
     });
 
     const response = UserResponse(user);
 
-    return response; 
+    return response;
+  },
+  Logout: async (request) => {
+    request = LogoutUserRequest(request);
+    request = await Validation.validation(AuthValidation.LOGOUT, request);
+    let result = await UsersModel.update({
+      where: {
+        username: request.username,
+        token: request.token,
+      },
+      data: { token: null },
+    });
+    if (!result) ThrowError(401, "invalid or expired token");
+    return true;
+  },
+  ChangePassword: async (request) => {
+    request = ChangePasswordRequest(request);
+    request = await Validation.validation(
+      AuthValidation.CHANGE_PASSWORD,
+      request
+    );
+
+    let user = await UsersModel.findUnique({
+      where: {
+        username: request.username,
+        token: request.token,
+      },
+    });
+
+    const isvalidPassword = await HashHandler.compare(
+      request.oldPassword,
+      user.password
+    );
+
+    if (!isvalidPassword) ThrowError(400);
+    const newPassword = await HashHandler.generate(request.newPassword);
+
+    await UsersModel.update({
+      where: {
+        username: request.username,
+        token: request.token,
+      },
+      data: { password: newPassword },
+    });
+    return true;
   },
 };
 

@@ -7,6 +7,8 @@ async function AuthRoutes(fastify, options) {
   
   fastify.post("/auth/register", AuthController.register);
   fastify.post("/auth/login", AuthController.login);
+  fastify.delete("/auth/logout", AuthController.logout);
+  fastify.patch("/auth/password/change", AuthController.changePassword);
 }
 
 export default AuthRoutes;
