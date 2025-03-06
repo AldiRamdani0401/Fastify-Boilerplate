@@ -2,6 +2,7 @@ import ThrowError from "../errors/throw.error.js";
 import {
   GetUserRequest,
   GetUserResponse,
+  UpdateUserResponse,
   UsersModel,
 } from "../models/mysql/user.model.js";
 import UserValidation from "../validations/user.validation.js";
@@ -14,14 +15,14 @@ const UserService = {
     return result;
   },
 
-  findById: async (userId) => {
-    userId = GetUserRequest(userId);
+  find: async (user) => {
+    user = GetUserRequest(user);
     const findByIdRequest = await Validation.validation(
-      UserValidation.FIND_BY_ID,
-      { username: userId }
+      UserValidation.FIND_USER,
+      { username: user }
     );
 
-    const user = await UsersModel.findUnique({
+    user = await UsersModel.findUnique({
       where: {
         username: findByIdRequest.username,
       },
@@ -35,24 +36,43 @@ const UserService = {
     return result;
   },
 
-  update: async (userId) => {
-    userId = GetUserRequest(userId);
-    const findByIdRequest = await Validation.validation(
-      UserValidation.FIND_BY_ID,
-      { username: userId }
+  update: async (user, request) => {
+    user = { username: GetUserRequest(user) };
+    const updateRequest = await Validation.validation(
+      UserValidation.UPDATE,
+      request
     );
 
-    const user = await UsersModel.findUnique({
+    if (updateRequest.name) user.name = updateRequest.name;
+    if (updateRequest.username) user.username = updateRequest.username;
+    if (updateRequest.email) user.email = updateRequest.email;
+    if (updateRequest.phone) user.phone = updateRequest.phone;
+
+    user = await UsersModel.update({
       where: {
-        username: findByIdRequest.username,
+        username: user.username,
+      },
+      data: user,
+    });
+
+    user = await UpdateUserResponse(user);
+
+    return user;
+  },
+
+  delete: async (request) => {
+    request = GetUserRequest(request);
+    request = await Validation.validation(UserValidation.FIND_USER, {
+      username: request,
+    });
+
+    const result = await UsersModel.delete({
+      where: {
+        username: request.username,
       },
     });
 
-    if (!user) {
-      ThrowError(404, "User Not Found");
-    }
 
-    const result = await GetUserResponse(user);
     return result;
   },
 };

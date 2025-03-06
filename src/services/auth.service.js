@@ -12,6 +12,8 @@ const AuthService = {
     user = CreateUserRequest(user);
     const registerRequest = await Validation.validation(AuthValidation.REGISTER, user);
 
+    console.info(registerRequest);
+
     const isDuplicate = await UsersModel.count({
         where: {
             username: registerRequest.username
@@ -41,12 +43,12 @@ const AuthService = {
         }
     });
 
-    if (!user) ThrowError(401, "Username or Password is wrong");
+    if (!user) ThrowError(400, "Username or Password is wrong");
 
     const isPasswordValid = await HashHandler.compare(loginRequest.password, user.password);
 
 
-    if (!isPasswordValid) ThrowError(401, "Username or Password is wrong");
+    if (!isPasswordValid) ThrowError(400, "Username or Password is wrong");
 
     user = await UsersModel.update({
         where: {

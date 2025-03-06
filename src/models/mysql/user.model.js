@@ -4,10 +4,10 @@ export const UsersModel = Database.mysqlClient.user;
 
 // REQUEST //
 export const CreateUserRequest = (user) => ({
-  username: String(user.username),
-  password: String(user.password),
-  name: String(user.name),
-  email: String(user.email),
+  ...(user.username && { username: String(user.username) }),
+  ...(user.password && { password: String(user.password) }),
+  ...(user.name && { name: String(user.name) }),
+  ...(user.email && { email: String(user.email) }),
   ...(user.phone && { phone: String(user.phone) }),
 });
 
@@ -18,6 +18,13 @@ export const LoginUserRequest = (user) => ({
 
 export const GetUserRequest = (userId) => String(userId);
 
+export const UpdateUserRequest = (user) => ({
+  ...(user.username && { username: String(user.username) }),
+  ...(user.name && { name: String(user.name) }),
+  ...(user.email && { email: String(user.email) }),
+  ...(user.phone && { phone: String(user.phone) }),
+});
+
 // RESPONSE //
 export const UserResponse = (user) => ({
   username: String(user.username),
@@ -27,14 +34,16 @@ export const UserResponse = (user) => ({
 
 export const GetUserResponse = async (users) => {
   if (users.length > 2) {
-    return await Promise.all(users.map((user) => {
-      return {
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        phone: user.phone,
-      };
-    }));
+    return await Promise.all(
+      users.map((user) => {
+        return {
+          name: user.name,
+          username: user.username,
+          email: user.email,
+          phone: user.phone,
+        };
+      })
+    );
   } else {
     return {
       name: users.name,
@@ -44,3 +53,10 @@ export const GetUserResponse = async (users) => {
     };
   }
 };
+
+export const UpdateUserResponse = async (user) => ({
+  ...(user.username && { username: user.username }),
+  ...(user.name && { name: user.name }),
+  ...(user.email && { email: user.email }),
+  ...(user.phone && { phone: user.phone }),
+});

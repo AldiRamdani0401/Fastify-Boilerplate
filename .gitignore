@@ -10,4 +10,5 @@ app
 package.json
 jest.config.js
 .babelrc
-yarn.lock
+pnpm-lock.yaml
+old*
