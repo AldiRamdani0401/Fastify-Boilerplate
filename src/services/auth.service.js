@@ -5,23 +5,21 @@ import AuthValidation from "../validations/auth.validation.js";
 import TokenHandler from "../handlers/token.handler.js";
 
 import {
-  ChangePasswordRequest,
-  CreateUserRequest,
+  RegisterUserRequest,
   LoginUserRequest,
   LogoutUserRequest,
+  ChangePasswordRequest,
   UserResponse,
   UsersModel,
 } from "../models/mysql/user.model.js";
 
 const AuthService = {
   Register: async (user) => {
-    user = CreateUserRequest(user);
+    user = RegisterUserRequest(user);
     const registerRequest = await Validation.validation(
       AuthValidation.REGISTER,
       user
     );
-
-    console.info(registerRequest);
 
     const isDuplicate = await UsersModel.count({
       where: {
@@ -37,8 +35,14 @@ const AuthService = {
       registerRequest.password
     );
 
+    registerRequest.role = {
+      connect: { role_name: registerRequest.role }, // Hubungkan ke role yang sudah ada
+    };
+
     const result = await UsersModel.create({
-      data: registerRequest,
+      data: {
+        ...registerRequest,
+      },
     });
 
     return result;

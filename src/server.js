@@ -3,7 +3,7 @@ import config from "./app/config.js";
 import Database from "./app/database.js";
 
 server.listen({ port: config.PORT }, async (err, address) => {
-  await Database.checkDatabaseConnection(server);
+  await Database.running(server);
   if (err) {
     server.log.error(err);
     process.exit(1);

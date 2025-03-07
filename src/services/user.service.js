@@ -2,6 +2,7 @@ import ThrowError from "../errors/throw.error.js";
 import {
   GetUserRequest,
   GetUserResponse,
+  GetUsersResponse,
   UpdateUserResponse,
   UsersModel,
 } from "../models/mysql/user.model.js";
@@ -11,7 +12,7 @@ import Validation from "../validations/validation.js";
 const UserService = {
   findAll: async () => {
     const users = await UsersModel.findMany();
-    const result = await GetUserResponse(users);
+    const result = await GetUsersResponse(users);
     return result;
   },
 
@@ -71,7 +72,6 @@ const UserService = {
         username: request.username,
       },
     });
-
 
     return result;
   },

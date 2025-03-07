@@ -12,17 +12,20 @@ const UserController = {
   //   // const user = await UserService.create();
   // },
   getAllUsers: async (_, response) => {
+    const requestTime = new Date().toISOString();
     const users = await UserService.findAll();
-    ResponseHandler(response, { code: 200, datas: users });
+    ResponseHandler(response, { code: 200, datas: users, timeRequest: requestTime });
   },
   getUser: async (request, response) => {
+    const requestTime = new Date().toISOString();
     let user = request.params.user;
     user = await UserService.find(user);
 
-    if (!user)
-      ResponseHandler(response, { code: 404, message: "User Not Found" });
+    if (!user) {
+      ResponseHandler(response, { code: 404, message: "User Not Found", timeRequest: requestTime });
+    }
 
-    ResponseHandler(response, { code: 200, datas: user });
+    ResponseHandler(response, { code: 200, datas: user, timeRequest: requestTime });
   },
   updateUser: async (request, response) => {
     let user = request.params.user;

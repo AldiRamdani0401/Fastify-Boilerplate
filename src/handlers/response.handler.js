@@ -74,7 +74,7 @@ const getResponseMessage = async (code) => {
 
 const ResponseHandler = async (
   response,
-  { code = 400, message = null, datas = [] },
+  { code = 400, message = null, datas = [], timeRequest },
   error = null
 ) => {
   if (error && error.code) {
@@ -88,7 +88,7 @@ const ResponseHandler = async (
     message = await getResponseMessage(code);
   }
 
-  return response.status(code).send({ message, datas });
+  return response.status(code).send({ message, datas, time_request: timeRequest, time_response: new Date().toISOString()});
 };
 
 export default ResponseHandler;

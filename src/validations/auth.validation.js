@@ -29,6 +29,13 @@ const AuthValidation = {
       .min(10, "phone be at least 10 character long")
       .max(13, "phone max length: 13")
       .optional(),
+    role: z
+      .string()
+      .min(3, "roleId be at least 3 character long")
+      .max(13, "roleId max length: 13")
+      .refine((val) => val === "user", {
+        message: "roleId must be 'user'",
+      }),
   }),
   LOGOUT: z.object({
     username: z.string().min(8).max(100),

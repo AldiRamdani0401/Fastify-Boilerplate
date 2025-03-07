@@ -9,6 +9,16 @@ export const CreateUserRequest = (user) => ({
   ...(user.name && { name: String(user.name) }),
   ...(user.email && { email: String(user.email) }),
   ...(user.phone && { phone: String(user.phone) }),
+  ...(user.role && { role: String(user.role) }),
+});
+
+export const RegisterUserRequest = (user) => ({
+  ...(user.username && { username: String(user.username) }),
+  ...(user.password && { password: String(user.password) }),
+  ...(user.name && { name: String(user.name) }),
+  ...(user.email && { email: String(user.email) }),
+  ...(user.phone && { phone: String(user.phone) }),
+  role: "user",
 });
 
 export const LoginUserRequest = (user) => ({
@@ -44,26 +54,27 @@ export const UserResponse = (user) => ({
   ...(user.token && { token: String(user.token) }),
 });
 
-export const GetUserResponse = async (users) => {
-  if (users.length > 2) {
-    return await Promise.all(
-      users.map((user) => {
-        return {
-          name: user.name,
-          username: user.username,
-          email: user.email,
-          phone: user.phone,
-        };
-      })
-    );
-  } else {
-    return {
-      name: users.name,
-      username: users.username,
-      email: users.email,
-      phone: users.phone,
-    };
-  }
+export const GetUsersResponse = async (users) => {
+  return await Promise.all(
+    users.map((user) => {
+      return {
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+        role: user.roleId,
+      };
+    })
+  );
+};
+
+export const GetUserResponse = async (user) => {
+  return {
+    name: user.name,
+    username: user.username,
+    email: user.email,
+    phone: user.phone,
+  };
 };
 
 export const UpdateUserResponse = async (user) => ({

@@ -1,6 +1,7 @@
 node_modules
 prisma
 generated
+dist
 tests
 
 middlewares
@@ -11,4 +12,7 @@ package.json
 jest.config.js
 .babelrc
 pnpm-lock.yaml
+
 old*
+dev*
+prod*
