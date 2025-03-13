@@ -16,9 +16,14 @@ const AuthController = {
   },
   login: async (request, response) => {
     try {
+      const requestTime = new Date().toISOString();
       const user = request.body;
       const result = await AuthService.Login(user);
-      ResponseHandler(response, { code: 200, datas: result });
+      ResponseHandler(response, {
+        code: 200,
+        datas: result,
+        timeRequest: requestTime,
+      });
     } catch (error) {
       return error;
     }

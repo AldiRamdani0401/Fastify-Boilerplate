@@ -73,6 +73,7 @@ const AuthService = {
       },
       data: {
         token: await TokenHandler.generate(),
+        islogin: true,
       },
     });
 
@@ -88,7 +89,7 @@ const AuthService = {
         username: request.username,
         token: request.token,
       },
-      data: { token: null },
+      data: { token: null, islogin: false },
     });
     if (!result) ThrowError(401, "invalid or expired token");
     return true;

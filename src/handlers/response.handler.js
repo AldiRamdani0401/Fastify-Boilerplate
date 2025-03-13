@@ -88,7 +88,13 @@ const ResponseHandler = async (
     message = await getResponseMessage(code);
   }
 
-  return response.status(code).send({ message, datas, time_request: timeRequest, time_response: new Date().toISOString()});
+  return response.status(code).send({
+    message,
+    datas,
+    time_request: timeRequest,
+    time_response: new Date().toISOString(),
+    latency: new Date().getTime() - new Date(timeRequest).getTime() + " ms",
+  });
 };
 
 export default ResponseHandler;
