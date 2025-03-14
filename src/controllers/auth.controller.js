@@ -5,13 +5,15 @@ const AuthController = {
   register: async (request, response) => {
     try {
       const user = request.body;
+      const requestTime = new Date().toISOString();
       await AuthService.Register(user);
       ResponseHandler(response, {
         code: 201,
         message: "Register Successfully",
+        timeRequest: requestTime,
       });
     } catch (error) {
-      return error;
+      throw error;
     }
   },
   login: async (request, response) => {
@@ -25,28 +27,35 @@ const AuthController = {
         timeRequest: requestTime,
       });
     } catch (error) {
-      return error;
+      throw error;
     }
   },
   logout: async (request, response) => {
     try {
+      const requestTime = new Date().toISOString();
       const user = request.body;
       await AuthService.Logout(user);
-      ResponseHandler(response, { code: 200, message: "Logout Successfully" });
+      ResponseHandler(response, {
+        code: 200,
+        message: "Logout Successfully",
+        timeRequest: requestTime,
+      });
     } catch (error) {
-      return error;
+      throw error;
     }
   },
   changePassword: async (request, response) => {
     try {
+      const requestTime = new Date().toISOString();
       const user = request.body;
       await AuthService.ChangePassword(user);
       ResponseHandler(response, {
         code: 200,
         message: "Change Password Successfully",
+        timeRequest: requestTime,
       });
     } catch (error) {
-      return error;
+      throw error;
     }
   },
 };

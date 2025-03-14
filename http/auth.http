@@ -1,0 +1,29 @@
+### REGISTER
+POST http://127.0.0.1:5000/auth/register
+Content-Type: application/json
+
+{
+    "name": "Testing",
+    "username": "Testingaja",
+    "password": "testingpassword",
+    "email": "test@example.com",
+    "phone": "085811223344"
+}
+
+### LOGIN (USER)
+POST http://127.0.0.1:5000/auth/login
+Content-Type: application/json
+
+{
+    "username": "Testingaja",
+    "password": "testingpassword"
+}
+
+### LOGIN (ADMIN)
+POST http://127.0.0.1:5000/auth/login
+Content-Type: application/json
+
+{
+    "username": "Testingaja",
+    "password": "testingpassword"
+}

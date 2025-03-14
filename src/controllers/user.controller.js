@@ -1,6 +1,7 @@
 import UserService from "../services/user.service.js";
 
 import ResponseHandler from "../handlers/response.handler.js";
+
 import {
   GetUserRequest,
   UpdateUserRequest,

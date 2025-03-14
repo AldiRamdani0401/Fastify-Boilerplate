@@ -30,7 +30,7 @@ const UserService = {
     });
 
     if (!user) {
-      ThrowError(404, "User Not Found");
+      return ThrowError(404, "User Not Found");
     }
 
     const result = await GetUserResponse(user);
