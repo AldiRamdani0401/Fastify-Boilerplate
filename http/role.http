@@ -1,0 +1,40 @@
+### CREATE ROLE
+POST http://127.0.0.1:5000/roles
+Content-Type: application/json
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN:{{$dotenv USER_TOKEN}}
+
+{
+    "role_name": "admin",
+    "manage_admin": true,
+    "manage_user": true,
+    "manage_users": true,
+    "manage_file_user": true,
+    "manage_file_users": true,
+    "manage_roles": true
+}
+
+### GET ROLES
+GET  http://127.0.0.1:5000/roles
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN:{{$dotenv USER_TOKEN}}
+
+### GET ROLE
+GET  http://127.0.0.1:5000/roles/admin
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN:{{$dotenv USER_TOKEN}}
+
+### UPDATE ROLE
+PATCH  http://127.0.0.1:5000/roles/user
+Content-Type: application/json
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN:{{$dotenv USER_TOKEN}}
+
+{
+    "role_name": "user"
+}
+
+### DELETE ROLE
+DELETE   http://127.0.0.1:5000/roles/user
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN:{{$dotenv USER_TOKEN}}

@@ -88,12 +88,15 @@ const ResponseHandler = async (
     message = await getResponseMessage(code);
   }
 
+  const now = new Date();
+  const latencyMs = now.getTime() - new Date(timeRequest).getTime();
+
   return response.status(code).send({
     message,
     datas,
     time_request: timeRequest,
     time_response: new Date().toISOString(),
-    latency: new Date().getTime() - new Date(timeRequest).getTime() + " ms",
+    latency: `${latencyMs} ms`,
   });
 };
 
