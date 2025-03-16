@@ -13,6 +13,7 @@ package.json
 jest.config.js
 .babelrc
 pnpm-lock.yaml
+.npmrc
 
 old*
 dev*
