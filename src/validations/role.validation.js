@@ -29,7 +29,7 @@ const RoleValidation = {
       message: "manage_roles must be true or false",
     }),
   }),
-  GET_ROLE: z.object({
+  FIND_ROLE: z.object({
     role_name: z
       .string()
       .min(3, { message: "role name length must be over 3 characters" })

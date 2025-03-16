@@ -5,8 +5,8 @@ import {
   GetRoleResponse,
   GetRolesRequest,
   GetRolesResponse,
-  RolesModel,
   UpdateRoleRequest,
+  RolesModel,
 } from "../models/mysql/role.model.js";
 import { UsersModel } from "../models/mysql/user.model.js";
 import RoleValidation from "../validations/role.validation.js";
@@ -72,7 +72,7 @@ const RoleService = {
   find: async (request) => {
     request = GetRoleRequest(request);
 
-    request = await Validation.validation(RoleValidation.GET_ROLE, request);
+    request = await Validation.validation(RoleValidation.FIND_ROLE, request);
 
     let result = await RolesModel.findUnique({
       where: {
@@ -118,6 +118,39 @@ const RoleService = {
       },
       data: {
         ...updateRoleRequest,
+      },
+    });
+
+    if (!result) {
+      ThrowError(400);
+    }
+
+    await UsersModel.updateMany({
+      where: {
+        roleId: request.role_name,
+      },
+      data: {
+        roleId: request.role_name,
+      },
+    });
+
+    return result;
+  },
+  delete: async (request) => {
+    request = await Validation.validation(RoleValidation.FIND_ROLE, request);
+
+    await UsersModel.updateMany({
+      where: {
+        roleId: request.role_name,
+      },
+      data: {
+        roleId: "user",
+      },
+    });
+
+    const result = await RolesModel.delete({
+      where: {
+        role_name: request.role_name,
       },
     });
 

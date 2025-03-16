@@ -5,6 +5,7 @@ async function RoleRoutes(fastify, options) {
     fastify.get("/roles", RoleController.getAllRoles);
     fastify.get("/roles/:role", RoleController.getRole);
     fastify.patch("/roles/:role", RoleController.updateRole);
+    fastify.delete("/roles/:role", RoleController.deleteRole);
 }
 
 export default RoleRoutes;
