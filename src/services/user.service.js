@@ -1,4 +1,6 @@
 import ThrowError from "../errors/throw.error.js";
+import FileHandler from "../handlers/file.handler.js";
+
 import {
   GetUserRequest,
   GetUserResponse,
@@ -6,6 +8,7 @@ import {
   UpdateUserResponse,
   UsersModel,
 } from "../models/mysql/user.model.js";
+
 import UserValidation from "../validations/user.validation.js";
 import Validation from "../validations/validation.js";
 
@@ -38,6 +41,8 @@ const UserService = {
   },
 
   update: async (user, request) => {
+    console.info(request);
+
     user = { username: GetUserRequest(user) };
     const updateRequest = await Validation.validation(
       UserValidation.UPDATE,
@@ -48,6 +53,15 @@ const UserService = {
     if (updateRequest.username) user.username = updateRequest.username;
     if (updateRequest.email) user.email = updateRequest.email;
     if (updateRequest.phone) user.phone = updateRequest.phone;
+
+    if (updateRequest.file_profile_image) {
+      updateRequest.file_profile_image.filename = "profile_image";
+      user.profile_image = await FileHandler.store(
+        updateRequest.file_profile_image,
+        user.username,
+        "images"
+      );
+    }
 
     user = await UsersModel.update({
       where: {
