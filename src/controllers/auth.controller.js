@@ -1,10 +1,12 @@
+import FormHandler from "../handlers/form.handler.js";
 import ResponseHandler from "../handlers/response.handler.js";
+
 import AuthService from "../services/auth.service.js";
 
 const AuthController = {
   register: async (request, response) => {
     try {
-      const user = request.body;
+      const user = await FormHandler(request);
       const requestTime = new Date().toISOString();
       await AuthService.Register(user);
       ResponseHandler(response, {
@@ -19,7 +21,7 @@ const AuthController = {
   login: async (request, response) => {
     try {
       const requestTime = new Date().toISOString();
-      const user = request.body;
+      const user = await FormHandler(request);
       const result = await AuthService.Login(user);
       ResponseHandler(response, {
         code: 200,
