@@ -35,6 +35,6 @@ X-USER-TOKEN:{{$dotenv USER_TOKEN}}
 }
 
 ### DELETE ROLE
-DELETE   http://127.0.0.1:5000/roles/user
+DELETE   http://127.0.0.1:5000/roles/admin
 X-API-KEY: {{$dotenv API_KEY}}
 X-USER-TOKEN:{{$dotenv USER_TOKEN}}

@@ -1,0 +1,15 @@
+### UPLOAD FILE
+POST http://127.0.0.1:5000/files/pdf
+Content-Type: application/json
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN:{{$dotenv USER_TOKEN}}
+
+{
+    "role_name": "admin",
+    "manage_admin": true,
+    "manage_user": true,
+    "manage_users": true,
+    "manage_file_user": true,
+    "manage_file_users": true,
+    "manage_roles": true
+}

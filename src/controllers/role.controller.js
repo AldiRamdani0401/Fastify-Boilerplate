@@ -56,6 +56,19 @@ const RoleController = {
       throw error;
     }
   },
+  deleteRole: async (request, response) => {
+    try {
+      const requestTime = new Date().toISOString();
+      await RoleService.delete({ role_name: request.params.role });
+      ResponseHandler(response, {
+        code: 200,
+        message: "Role Deleted Successfully",
+        timeRequest: requestTime,
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default RoleController;

@@ -6,6 +6,7 @@ tests
 
 middlewares
 app
+storages
 
 .env
 package.json
