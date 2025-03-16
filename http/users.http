@@ -1,0 +1,13 @@
+### === GET USERS === ###
+### All
+GET http://127.0.0.1:5000/users
+Content-Type: application/json
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN:{{$dotenv USER_TOKEN}}
+### === end of GET USERS === ###
+
+### === GET USER === ###
+GET http://127.0.0.1:5000/users/Coba Testing
+Content-Type: application/json
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN:{{$dotenv USER_TOKEN}}
