@@ -1,29 +1,30 @@
 import Database from "../../app/database.js";
+import { Mandatory } from "../../utils/types.js";
 
 export const UsersModel = Database.mysqlClient.user;
 
 // REQUEST //
 export const CreateUserRequest = (user) => ({
-  ...(user.username && { username: String(user.username) }),
-  ...(user.password && { password: String(user.password) }),
-  ...(user.name && { name: String(user.name) }),
-  ...(user.email && { email: String(user.email) }),
-  ...(user.phone && { phone: String(user.phone) }),
-  ...(user.role && { role: String(user.role) }),
+  username: String(Mandatory(user?.username, "Username")),
+  password: String(Mandatory(user?.password, "Password")),
+  name: String(Mandatory(user?.name, "Name")),
+  email: String(Mandatory(user?.email, "Email")),
+  ...(user?.phone && { phone: String(user?.phone) }),
+  role: String(Mandatory(user?.role, "Role")),
 });
 
 export const RegisterUserRequest = (user) => ({
-  ...(user.username && { username: String(user.username) }),
-  ...(user.password && { password: String(user.password) }),
-  ...(user.name && { name: String(user.name) }),
-  ...(user.email && { email: String(user.email) }),
-  ...(user.phone && { phone: String(user.phone) }),
+  username: String(Mandatory(user?.username, "Username")),
+  password: String(Mandatory(user?.password, "Password")),
+  name: String(Mandatory(user?.name, "Name")),
+  email: String(Mandatory(user?.email, "Email")),
+  ...(user?.phone && { phone: String(user?.phone) }),
   role: "user",
 });
 
 export const LoginUserRequest = (user) => ({
-  ...(user.username && { username: String(user.username) }),
-  ...(user.password && { password: String(user.password) }),
+  username: String(Mandatory(user?.username, "Username")),
+  password: String(Mandatory(user?.password, "Password")),
 });
 
 export const LogoutUserRequest = (user) => ({
@@ -45,6 +46,12 @@ export const UpdateUserRequest = (user) => ({
   ...(user.name && { name: String(user.name) }),
   ...(user.email && { email: String(user.email) }),
   ...(user.phone && { phone: String(user.phone) }),
+  ...(user.files.length > 0 && {
+    profile_image: String(user.files[0].filename),
+  }),
+  ...(user.files.length > 0 && {
+    file_profile_image: Object(user.files[0]),
+  }),
 });
 
 // RESPONSE //
@@ -74,12 +81,14 @@ export const GetUserResponse = async (user) => {
     username: user.username,
     email: user.email,
     phone: user.phone,
+    profile_image: user.profile_image,
   };
 };
 
 export const UpdateUserResponse = async (user) => ({
-  ...(user.username && { username: user.username }),
-  ...(user.name && { name: user.name }),
-  ...(user.email && { email: user.email }),
-  ...(user.phone && { phone: user.phone }),
+  name: user.name,
+  username: user.username,
+  email: user.email,
+  phone: user.phone,
+  profile_image: user.profile_image,
 });
