@@ -2,6 +2,8 @@ import UserService from "../services/user.service.js";
 
 import ResponseHandler from "../handlers/response.handler.js";
 
+import FormHandler from "../handlers/form.handler.js";
+
 import {
   GetUserRequest,
   UpdateUserRequest,
@@ -45,11 +47,19 @@ const UserController = {
     });
   },
   updateUser: async (request, response) => {
+    const requestTime = new Date().toISOString();
     let user = request.params.user;
-    request = UpdateUserRequest(request.body);
+    const updateData = await FormHandler(request);
+
+    request = UpdateUserRequest(updateData);
+
     user = await UserService.update(user, request);
 
-    ResponseHandler(response, { code: 200, datas: user });
+    ResponseHandler(response, {
+      code: 200,
+      datas: user,
+      timeRequest: requestTime,
+    });
   },
   deleteUser: async (request, response) => {
     let user = request.params.user;
