@@ -6,6 +6,7 @@ import { promisify } from "util";
 import ThrowError from "../errors/throw.error.js";
 
 import { fileURLToPath } from "url";
+import config from "../app/config.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +36,7 @@ const storage = multer.diskStorage({
     const filename = `${ownerPrefix}_${sanitizedOriginalName}`;
 
     req.savedFileName = filename;
+    req.imageURL = `${config.BASE_URL}/files/${fileType}/${filename}`;
 
     cb(null, filename);
   },
@@ -63,6 +65,24 @@ const FileHandler = {
     const { size } = fs.statSync(filePath);
 
     return { stream, size };
+  },
+  store: async (file, owner, fileType) => {
+    const saveDir = path.resolve(`./src/storages/${fileType}`);
+    if (!fs.existsSync(saveDir)) {
+      await fs.promises.mkdir(saveDir, { recursive: true });
+    }
+
+    const sanitizedOriginalName = `${owner}_${file.filename}`
+      .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9._-]/g, "")
+      .replace(/-/g, "_");
+
+    const filePath = path.join(saveDir, sanitizedOriginalName);
+
+    const fileData = file.data || file.buffer || Buffer.from([]);
+    await fs.promises.writeFile(filePath, fileData);
+
+    return `${config.BASE_URL}/files/${fileType}/${sanitizedOriginalName}`;
   },
   change: async (fileType, owner, oldFileName, newFile) => {
     if (!fileType || !owner || !oldFileName || !newFile) {
