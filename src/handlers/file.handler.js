@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
     cb(null, saveDir);
   },
   filename: (req, file, cb) => {
-    const { fileOwner } = req.customStorageInfo || {};
+    const { fileOwner, fileType } = req.customStorageInfo || {};
     const ownerPrefix = fileOwner || "unknown";
     const sanitizedOriginalName = file.originalname
       .replace(/\s+/g, "_")
