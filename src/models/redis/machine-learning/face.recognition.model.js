@@ -6,11 +6,11 @@ export const getDescriptorsWithCache = async (username = null) => {
     if (username) {
       // Cek apakah Redis punya data spesifik user
       const key = `FaceRecognition:${username}`;
-      const record = await FaceRecognitionRepository.getOne(username); // fungsi getOne perlu ditambahkan di bawah
+      const record = await FaceRecognitionRepository.getOne(username);
 
       if (record && record.descriptor?.length > 0) {
         console.info(`✅ Descriptor for ${username} found in Redis.`);
-        return [record]; // kembalikan dalam bentuk array agar tetap konsisten format
+        return [record];
       }
 
       // Kalau tidak ada, ambil dari PostgreSQL

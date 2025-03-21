@@ -39,9 +39,17 @@ export const GetExamCategoryRequest = (request) => ({
   category_name: String(Mandatory(request.category)),
 });
 
+export const UpdateExamCategoryRequest = (request) => ({
+  ...(request.course_name && { category_name: String(request.course_name) }),
+  ...(request.owner && { owner: String(request.owner) }),
+  ...(request.admins && {
+    admins: JSON.parse(request.admins).map((admin) => String(admin)),
+  }),
+});
+
 // RESPONSE //
 export const GetExamCategoriesResponse = async (exams) => ({
-  courses: exams.map((exam) => ({
+  list: exams.map((exam) => ({
     course: exam.category_name,
   })),
   total_page: Number(exams.totalPage),
