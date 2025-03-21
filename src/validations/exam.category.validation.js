@@ -31,6 +31,32 @@ const ExamCategoryValidation = {
       .min(5, "exam category name length must be over 5 characters")
       .max(100, "exam category max 100 characters"),
   }),
+  UPDATE_EXAM_CATEGORY: z.object({
+    category_name: z
+      .string()
+      .min(5, "exam category name length must be over 5 characters")
+      .max(100, "exam category name max 100 characters")
+      .optional(),
+    owner: z
+      .string()
+      .min(5, "exam owner length must be over 5 characters")
+      .max(100, "exam owner max 100 characters")
+      .optional(),
+    admins: z
+      .array(z.string())
+      .refine(
+        (admins) => {
+          return (
+            Array.isArray(admins) &&
+            admins.every((admin) => typeof admin === "string")
+          );
+        },
+        {
+          message: "Each admin must be a string",
+        }
+      )
+      .optional(),
+  }),
 };
 
 export default ExamCategoryValidation;
