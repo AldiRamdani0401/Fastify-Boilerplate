@@ -77,7 +77,10 @@ const ExamPackageService = {
     const examPackages = await ExamPackageModel.findMany({
       skip: (request.page - 1) * request.limit,
       take: request.limit,
-      ...(Object.keys(where).length > 0 && { where }),
+      where: {
+        ...where,
+        isDeleted: false,
+      },
       orderBy: {
         exam_package_name: request.order,
       },
@@ -97,8 +100,6 @@ const ExamPackageService = {
       request
     );
 
-    console.info(getExamPackageRequest.exam_package_name);
-
     const result = await ExamPackageModel.findUnique({
       where: {
         exam_package_name: getExamPackageRequest.exam_package_name,
@@ -112,7 +113,56 @@ const ExamPackageService = {
 
   Update: async (request) => {
     request = UpdateExamPackageRequest(request);
-    console.info(request);
+    const updateExamPackageRequest = await Validation.validation(
+      ExamPackageValidation.UPDATE_EXAM_PACKAGE,
+      request
+    );
+
+    const isExamPackageExists = await ExamPackageModel.findUnique({
+      where: {
+        exam_package_name: updateExamPackageRequest.param.exam_package_name,
+      },
+    });
+
+    if (!isExamPackageExists) ThrowError(400, "Exam Package Not Found");
+
+    const updatedExamPackage = await ExamPackageModel.update({
+      where: {
+        exam_package_name: updateExamPackageRequest.param.exam_package_name,
+      },
+      data: {
+        ...updateExamPackageRequest.datas,
+      },
+    });
+
+    return updatedExamPackage;
+  },
+
+  Delete: async (request) => {
+    request = GetExamPackageRequest(request);
+    const deleteExamPackageRequest = await Validation.validation(
+      ExamPackageValidation.GET_EXAM_PACKAGE,
+      request
+    );
+
+    const isExamPackageExists = await ExamPackageModel.findUnique({
+      where: {
+        exam_package_name: deleteExamPackageRequest.exam_package_name,
+        isDeleted: false,
+      },
+    });
+
+    if (!isExamPackageExists) ThrowError(400, "Exam Package Not Found");
+
+    await ExamPackageModel.update({
+      where: {
+        exam_package_name: deleteExamPackageRequest.exam_package_name,
+        isDeleted: false,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
   },
 };
 

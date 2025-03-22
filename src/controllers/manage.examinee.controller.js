@@ -1,18 +1,18 @@
 import FormHandler from "../handlers/form.handler.js";
 import ResponseHandler from "../handlers/response.handler.js";
+import ManageExamineeService from "../services/manage.examinee.service.js";
 
-import ExamPackageService from "../services/exam.package.service.js";
-
-const ExamPackagesController = {
-  createExamPackage: async (request, response) => {
+const ManageExamineeController = {
+  createExaminees: async (request, response) => {
     try {
       const requestTime = new Date().toISOString();
       request = await FormHandler(request);
-      const examPackage = await ExamPackageService.Create(request);
+
+      const examinees = await ManageExamineeService.Create(request);
       ResponseHandler(response, {
         code: 201,
-        message: "New Exam Package Created Successfully",
-        datas: examPackage,
+        message: "New Examinees Created Successfully",
+        datas: examinees,
         timeRequest: requestTime,
       });
     } catch (error) {
@@ -20,13 +20,13 @@ const ExamPackagesController = {
     }
   },
 
-  getAllExamPackages: async (request, response) => {
+  getAllExaminees: async (request, response) => {
     try {
       const requestTime = new Date().toISOString();
-      const examPackages = await ExamPackageService.FindAll(request);
+      const examinees = await ManageExamineeService.FindAll(request);
       ResponseHandler(response, {
         code: 200,
-        datas: examPackages,
+        datas: examinees,
         timeRequest: requestTime,
       });
     } catch (error) {
@@ -34,13 +34,13 @@ const ExamPackagesController = {
     }
   },
 
-  getDetailExamPackage: async (request, response) => {
+  getDetailExaminee: async (request, response) => {
     try {
       const requestTime = new Date().toISOString();
-      const examPackage = await ExamPackageService.FindOne(request.params);
+      const examinee = await ManageExamineeService.FindOne(request.params);
       ResponseHandler(response, {
         code: 200,
-        datas: examPackage,
+        datas: examinee,
         timeRequest: requestTime,
       });
     } catch (error) {
@@ -48,16 +48,19 @@ const ExamPackagesController = {
     }
   },
 
-  updateExamPackage: async (request, response) => {
+  updateExaminee: async (request, response) => {
     try {
       const requestTime = new Date().toISOString();
-      const param = request.params.packageId;
+      const param = request.params.examineeId;
       request = await FormHandler(request);
-      const examPackage = await ExamPackageService.Update({ param, request });
+      const examinee = await ManageExamineeService.Update({
+        param,
+        request,
+      });
       ResponseHandler(response, {
         code: 200,
-        message: "Exam Package Updated Successfully",
-        datas: examPackage,
+        message: "Examinee Updated Successfully",
+        datas: examinee,
         timeRequest: requestTime,
       });
     } catch (error) {
@@ -65,13 +68,13 @@ const ExamPackagesController = {
     }
   },
 
-  deleteExamPackage: async (request, response) => {
+  deleteExaminee: async (request, response) => {
     try {
       const requestTime = new Date().toISOString();
-      await ExamPackageService.Delete(request.params);
+      const examinee = await ManageExamineeService.Delete(request.params);
       ResponseHandler(response, {
         code: 200,
-        message: "Exam Package Deleted Successfully",
+        datas: examinee,
         timeRequest: requestTime,
       });
     } catch (error) {
@@ -80,4 +83,4 @@ const ExamPackagesController = {
   },
 };
 
-export default ExamPackagesController;
+export default ManageExamineeController;

@@ -67,6 +67,12 @@ async function ExamRoutes(fastify, options) {
     url: "/exams/packages/:packageId",
     handler: ExamPackagesController.updateExamPackage,
   });
+
+  fastify.route({
+    method: "DELETE",
+    url: "/exams/packages/:packageId",
+    handler: ExamPackagesController.deleteExamPackage,
+  });
   //*** end of EXAM PACKAGE ***//
 
   //*** EXAM EVENT ***//
@@ -79,7 +85,25 @@ async function ExamRoutes(fastify, options) {
   fastify.route({
     method: "GET",
     url: "/exams/events",
-    handler: ExamQuestionController.getAllExamQuestions,
+    handler: ExamEventController.getAllExamEvents,
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/exams/events/:event",
+    handler: ExamEventController.getDetailExamEvent,
+  });
+
+  fastify.route({
+    method: "PATCH",
+    url: "/exams/events/:event",
+    handler: ExamEventController.updateExamEvent,
+  });
+
+  fastify.route({
+    method: "DELETE",
+    url: "/exams/events/:event",
+    handler: ExamEventController.deleteExamEvent,
   });
   //*** end of EXAM EVENT ***//
 
