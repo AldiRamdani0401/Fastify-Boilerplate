@@ -43,7 +43,30 @@ export const GetExamPackageRequest = (request) => ({
   exam_package_name: String(Mandatory(request.packageId, "Package ID")),
 });
 
-export const UpdateExamPackageRequest = (request) => ({});
+export const UpdateExamPackageRequest = (request) => ({
+  param: {
+    exam_package_name: String(Mandatory(request.param)),
+  },
+  datas: {
+    ...(request.request.exam_package_name && {
+      exam_package_name: String(request.request.exam_package_name),
+    }),
+    ...(request.request.exam_package_questions && {
+      exam_package_questions: JSON.parse(
+        request.request.exam_package_questions
+      ),
+    }),
+    ...(request.request.owner && {
+      owner: String(request.request.owner),
+    }),
+    ...(request.request.admins && {
+      admins: JSON.parse(request.request.admins),
+    }),
+    ...(request.request.max_duration && {
+      max_duration: Number(request.request.max_duration),
+    }),
+  },
+});
 
 // RESPONSE //
 export const GetExamPackagesResponse = async (examPackages) => ({

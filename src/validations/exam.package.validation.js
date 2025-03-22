@@ -19,11 +19,43 @@ const ExamPackageValidation = {
       .min(10, "max duration must be over 10 minutes")
       .max(1440, "max duration must be less than or equal to 1440 minutes"),
   }),
+
   GET_EXAM_PACKAGE: z.object({
     exam_package_name: z
       .string()
       .min(5, "exam package name must be over 5 characters")
       .max(100, "exam package name max 100 characters"),
+  }),
+  
+  UPDATE_EXAM_PACKAGE: z.object({
+    param: z.object({
+      exam_package_name: z
+        .string()
+        .min(5, "exam package name must be over 5 characters")
+        .max(100, "exam package name max 100 characters"),
+    }),
+    datas: z.object({
+      owner: z.string().nonempty("owner must be defined").optional(),
+      admins: z.array(z.string()).optional(),
+      exam_package_name: z
+        .string()
+        .min(5, "exam package name must be over 5 characters")
+        .max(100, "exam package name max 100 characters")
+        .optional(),
+      exam_package_questions: z
+        .array(
+          z.object({
+            exam_category: z.string(),
+            exam_sub_category: z.string(),
+          })
+        )
+        .optional(),
+      max_duration: z
+        .number()
+        .min(10, "max duration must be over 10 minutes")
+        .max(1440, "max duration must be less than or equal to 1440 minutes")
+        .optional(),
+    }),
   }),
 };
 
