@@ -4,6 +4,8 @@ import Validation from "../validations/validation.js";
 
 import ExamineesValidation from "../validations/examinee.validation.js";
 
+import AdminExamValidation from "../validations/admin.exam.validation.js";
+
 import {
   CreateExamineesRequest,
   GetExamineesRequest,
@@ -13,7 +15,13 @@ import {
   ExamineeModel,
 } from "../models/postgres/examinee.model.js";
 
-const ManageExamineeService = {
+import {
+  AdminFindExamEventsRequest,
+  ExamEventModel,
+  GetExamEventsResponse,
+} from "../models/postgres/exam.event.model.js";
+
+const AdminExamService = {
   Create: async (request) => {
     request = await CreateExamineesRequest(request);
     let createExamineesRequest = await Validation.validation(
@@ -173,9 +181,58 @@ const ManageExamineeService = {
   },
 
   // ADMIN //
-  AdminFindExamEvents: async (request) => {
-    console.debug(request.params);
+  Admin: {
+    FindAll: async (request) => {
+      request = AdminFindExamEventsRequest(request);
+
+      const where = {
+        admins: {
+          has: request.admins,
+        },
+      };
+
+      if (request.search) {
+        where.OR = [
+          { exam_event_name: { contains: request.search } },
+          { exam_package_id: { contains: request.search } },
+          { examinee_categories: { has: request.search } },
+          { proctors: { has: request.search } },
+        ];
+      }
+
+      const adminExamEvents = await ExamEventModel.findMany({
+        skip: (request.page - 1) * request.limit,
+        take: request.limit,
+        where,
+        orderBy: {
+          exam_event_name: request.order,
+        },
+        select: {
+          exam_event_name: true,
+          exam_package_id: true,
+          owner: true,
+          createdAt: true,
+          updatedAt: true,
+          proctors: true,
+          end_time: true,
+          start_time: true,
+          isDeleted: true,
+          examinee_categories: true,
+        },
+      });
+
+      adminExamEvents.totalPage = Math.ceil(
+        adminExamEvents.length / request.limit
+      );
+      adminExamEvents.totalDatas = adminExamEvents.length;
+
+      const result = GetExamEventsResponse(adminExamEvents);
+
+      return result;
+    },
+
+    FindOne: async (request) => {},
   },
 };
 
-export default ManageExamineeService;
+export default AdminExamService;

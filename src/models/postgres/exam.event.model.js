@@ -1,4 +1,5 @@
 import Database from "../../app/database.js";
+import QueryParser from "../../utils/query.parser.js";
 import { Mandatory } from "../../utils/types.js";
 
 export const ExamEventModel = Database.postgresClient.examEvent;
@@ -10,9 +11,17 @@ export const CreateExamEventRequest = (request) => ({
     Mandatory(request.exam_package_id, "Exam Package Id")
   ),
   owner: String(Mandatory(request.owner, "Owner")),
-  admins: Array.isArray(Mandatory(request.admins, "Admins")) ? request.admins : [],
-  proctors: Array.isArray(Mandatory(request.proctors, "Proctors")) ? request.proctors : [],
-  examinee_categories: Array.isArray(Mandatory(request.examinee_categories, "Examinee Category")) ? request.examinee_categories : [],
+  admins: Array.isArray(Mandatory(request.admins, "Admins"))
+    ? request.admins
+    : [],
+  proctors: Array.isArray(Mandatory(request.proctors, "Proctors"))
+    ? request.proctors
+    : [],
+  examinee_categories: Array.isArray(
+    Mandatory(request.examinee_categories, "Examinee Category")
+  )
+    ? request.examinee_categories
+    : [],
   start_time: new Date(
     Mandatory(request.start_time, "Start Time")
   ).toISOString(),
@@ -64,10 +73,14 @@ export const UpdateExamEventRequest = (request) => ({
       admins: Array.isArray(request.body.admins) ? request.body.admins : [],
     }),
     ...(request.body.proctors && {
-      proctors: Array.isArray(request.body.proctors) ? request.body.proctors : [],
+      proctors: Array.isArray(request.body.proctors)
+        ? request.body.proctors
+        : [],
     }),
     ...(request.body.examinee_categories && {
-      examinee_categories: Array.isArray(request.body.examinee_categories) ? request.body.examinee_categories : [],
+      examinee_categories: Array.isArray(request.body.examinee_categories)
+        ? request.body.examinee_categories
+        : [],
     }),
     ...(request.body.start_time && {
       start_time: new Date(request.body.start_time).toISOString(),
@@ -78,6 +91,12 @@ export const UpdateExamEventRequest = (request) => ({
   },
 });
 
+// Admin //
+export const AdminFindExamEventsRequest = (request) => ({
+  admins: String(Mandatory(request.params.adminId, "Admin ID")),
+  ...QueryParser(request),
+});
+
 // RESPONSE //
 export const GetExamEventsResponse = async (examEvents) => ({
   list: examEvents.map((examEvent) => ({
@@ -86,3 +105,4 @@ export const GetExamEventsResponse = async (examEvents) => ({
   total_page: Number(examEvents.totalPage),
   total_datas: Number(examEvents.totalDatas),
 });
+

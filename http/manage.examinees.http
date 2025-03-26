@@ -1,0 +1,4 @@
+### MANAGE EXAM EVENTS (ADMIN)
+GET http://127.0.0.1:5000/manage/examinees/admin1/events
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN: {{$dotenv USER_TOKEN}}
