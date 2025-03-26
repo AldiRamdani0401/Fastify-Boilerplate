@@ -81,6 +81,23 @@ const ManageExamineeController = {
       throw error;
     }
   },
+
+  // Examinee Events (Admin) //
+  getExamEventRelatedAdmin: async (request, response) => {
+    try {
+      const requestTime = new Date().toISOString();
+      const adminExamEvents = await ManageExamineeService.AdminFindExamEvents(
+        request
+      );
+      ResponseHandler(response, {
+        code: 200,
+        datas: adminExamEvents,
+        timeRequest: requestTime,
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default ManageExamineeController;

@@ -1,0 +1,73 @@
+### EXAMINEE EVENTS
+GET http://127.0.0.1:5000/examinees/EXM-b859688a8c684327a5ee655002df69c100000000000000000000000000000000000000000000000000000-00m8k0lyus/events
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN: {{$dotenv USER_TOKEN}}
+
+### EXAMINEE DETAIL EVENT
+GET http://127.0.0.1:5000/examinees/EXM-b859688a8c684327a5ee655002df69c100000000000000000000000000000000000000000000000000000-00m8k0lyus/UTS SEMESTER 1
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN: {{$dotenv USER_TOKEN}}
+
+### EXAMINEE START EXAM EVENT
+POST http://127.0.0.1:5000/examinees/EXM-b859688a8c684327a5ee655002df69c100000000000000000000000000000000000000000000000000000-00m8k0lyus/UTS SEMESTER 1/UTS SEMESTER 1/Pemrograman Javascript
+Content-Type: application/json
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN: {{$dotenv USER_TOKEN}}
+
+{
+    "start_exam": true
+}
+
+
+### EXAMINEE SUBMIT EXAM SHEET
+POST http://127.0.0.1:5000/examinees/EXM-b859688a8c684327a5ee655002df69c100000000000000000000000000000000000000000000000000000-00m8k0lyus/UTS SEMESTER 1/UTS SEMESTER 1/Pemrograman Javascript/
+Content-Type: application/json
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN: {{$dotenv USER_TOKEN}}
+
+{
+    "submit_examinee_sheet":  {
+        "examinee_sheet_id": 21,
+        "exam_event_name": "UTS SEMESTER 1",
+        "examinee_id": "EXM-b859688a8c684327a5ee655002df69c100000000000000000000000000000000000000000000000000000-00m8k0lyus",
+        "examinee_name": "Student 2",
+        "exam_category": "Pemrograman Javascript",
+        "exam_sub_category": "UTS SEMESTER 1",
+        "examinee_exam_status": "ongoing",
+        "finished_at": null,
+        "start_at": "2025-03-26 13:59:18.995Z",
+        "examinee_exam_sheet": [
+            {
+                "id": 3,
+                "exam_type": "essay",
+                "exam_category": "Pemrograman Javascript",
+                "exam_sub_category": "UTS SEMESTER 1",
+                "examinee_answer": ["Array Adalah Variabel Yang Sakti"]
+            },
+            {
+                "id": 1,
+                "exam_type": "multiple_choice",
+                "exam_category": "Pemrograman Javascript",
+                "exam_sub_category": "UTS SEMESTER 1",
+                "examinee_answer": [            
+                    {
+                        "field": "Function itu adalah... A",
+                        "label": "A"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "exam_type": "multiple_choice",
+                "exam_category": "Pemrograman Javascript",
+                "exam_sub_category": "UTS SEMESTER 1",
+                "examinee_answer": [
+                    {
+                        "field": "Variabel itu adalah... A",
+                        "label": "A"
+                    }
+                ]
+            }
+        ]
+    }
+}

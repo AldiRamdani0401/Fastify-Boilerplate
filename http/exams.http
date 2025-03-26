@@ -1,0 +1,26 @@
+### CREATE EXAM EVENT
+POST http://127.0.0.1:5000/exams/events
+Content-Type: application/json
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN: {{$dotenv USER_TOKEN}}
+
+{
+  "exam_event_name": "UTS SEMESTER 1",
+  "exam_package_id": "UTS SEMESTER 1",
+  "owner": "Testing Aja",
+  "admins": ["admin1", "admin2"],
+  "proctors": ["proctor1", "proctor2"],
+  "start_time": "2025-03-21T13:09:04.686Z",
+  "end_time": "2025-03-22T13:09:04.686Z",
+  "examinee_categories": ["SEMESTER 1"]
+}
+
+### EXAM EVENTS
+GET http://127.0.0.1:5000/exams/events?search=SEMESTER 2
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN: {{$dotenv USER_TOKEN}}
+
+### EXAM EVENT
+GET http://127.0.0.1:5000/exams/events/UTS SEMESTER 1
+X-API-KEY: {{$dotenv API_KEY}}
+X-USER-TOKEN: {{$dotenv USER_TOKEN}}

@@ -171,6 +171,11 @@ const ManageExamineeService = {
 
     if (!result) ThrowError(400, "Delete Examinee Failed");
   },
+
+  // ADMIN //
+  AdminFindExamEvents: async (request) => {
+    console.debug(request.params);
+  },
 };
 
 export default ManageExamineeService;

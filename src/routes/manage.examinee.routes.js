@@ -1,7 +1,7 @@
 import ManageExamineeController from "../controllers/manage.examinee.controller.js";
 
 async function ManageExamineeRoutes(fastify, options) {
-  //*** MANAGE EXAMINEE ***//
+  //*** MANAGE EXAMINEES ***//
   fastify.route({
     method: "POST",
     url: "/examinees",
@@ -31,7 +31,15 @@ async function ManageExamineeRoutes(fastify, options) {
     url: "/examinees/:examineeId",
     handler: ManageExamineeController.deleteExaminee,
   });
-  //*** end of MANAGE EXAMINEE ***//
+  //*** end of MANAGE EXAMINEES ***//
+
+  //*** MANAGE EXAMINEES EXAMS (ADMIN) ***//
+  fastify.route({
+    method: "GET",
+    url: "/examinees/:adminId/events",
+    handler: ManageExamineeController.getExamEventRelatedAdmin,
+  });
+  //*** end of MANAGE EXAMINEES EXAMS ***//
 }
 
 export default ManageExamineeRoutes;

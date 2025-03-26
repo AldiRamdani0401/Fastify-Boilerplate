@@ -35,12 +35,32 @@ const ExamineeController = {
     try {
       const requestTime = new Date().toISOString();
       const params = request.params;
-      const formData = await FormHandler(request);
+      // const formData = await FormHandler(request);
+      const formData = request.body;
       const examPackage = await ExamineeService.StartExam({ params, formData });
       ResponseHandler(response, {
         code: 201,
         message: "Exam Event Started",
         datas: examPackage,
+        timeRequest: requestTime,
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  submitExamineeEvent: async (request, response) => {
+    try {
+      const requestTime = new Date().toISOString();
+      const params = request.params;
+      const formData = request.body;
+      await ExamineeService.SubmitExam({
+        params,
+        formData,
+      });
+      ResponseHandler(response, {
+        code: 200,
+        message: "Exam Event Submitted",
         timeRequest: requestTime,
       });
     } catch (error) {
