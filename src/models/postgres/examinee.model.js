@@ -103,12 +103,67 @@ export const StartExamRequest = (request) => ({
     exam_package_id: String(
       Mandatory(request.params.packageId, "Exam Package ID")
     ),
+    exam_category: String(
+      Mandatory(request.params.examCategory, "Exam Category")
+    ),
   },
   datas: {
     start_exam: JSON.parse(
       Mandatory(request.formData.start_exam, "Confirm Start Exam")
     ),
     start_at: new Date().toISOString(),
+  },
+});
+
+export const SubmitExamRequest = ({ params, formData }) => ({
+  params: {
+    examinee_id: String(Mandatory(params.examineeId, "Examinee ID")),
+    exam_event_name: String(Mandatory(params.eventId, "Exam Event ID")),
+    exam_package_id: String(Mandatory(params.packageId, "Exam Package ID")),
+    exam_category: String(Mandatory(params.examCategory, "Exam Category")),
+  },
+  datas: {
+    examinee_sheet_id: Number(
+      Mandatory(
+        formData.submit_examinee_sheet.examinee_sheet_id,
+        "Examinee Sheet ID"
+      )
+    ),
+    exam_event_name: String(
+      Mandatory(
+        formData.submit_examinee_sheet.exam_event_name,
+        "Examinee Event Name"
+      )
+    ),
+    examinee_id: String(
+      Mandatory(formData.submit_examinee_sheet.examinee_id, "Examinee ID")
+    ),
+    examinee_name: String(
+      Mandatory(formData.submit_examinee_sheet.examinee_name, "Examinee Name")
+    ),
+    exam_category: String(
+      Mandatory(formData.submit_examinee_sheet.exam_category, "Exam Category")
+    ),
+    exam_sub_category: String(
+      Mandatory(
+        formData.submit_examinee_sheet.exam_sub_category,
+        "Exam Sub Category"
+      )
+    ),
+    examinee_exam_status: String(
+      Mandatory(
+        formData.submit_examinee_sheet.examinee_exam_status,
+        "Examinee Exam Status"
+      )
+    ),
+    start_at: String(
+      Mandatory(formData.submit_examinee_sheet.start_at, "Exam Start At")
+    ),
+    finished_at: new Date().toISOString(),
+    examinee_exam_sheet: Mandatory(
+      formData.submit_examinee_sheet.examinee_exam_sheet,
+      "Examinee Exam Sheet"
+    ),
   },
 });
 

@@ -1,5 +1,6 @@
 import ThrowError from "../errors/throw.error.js";
 import Validation from "../validations/validation.js";
+import IdHandler from "../handlers/id.handler.js";
 
 import ExamineesValidation from "../validations/examinee.validation.js";
 
@@ -9,11 +10,20 @@ import {
   GetExamineeEventsRequest,
   GetExamineeEventsResponse,
   StartExamRequest,
+  SubmitExamRequest,
 } from "../models/postgres/examinee.model.js";
+
 import { ExamineeResultsModel } from "../models/postgres/examinee.result.model.js";
-import IdHandler from "../handlers/id.handler.js";
+
 import { ExamEventModel } from "../models/postgres/exam.event.model.js";
+
 import { ExamPackageModel } from "../models/postgres/exam.package.model.js";
+
+import {
+  ExamineeExamQuestionsResponse,
+  ExamQuestionModel,
+} from "../models/postgres/exam.question.model.js";
+import { ExamSheetsModel } from "../models/postgres/exam.sheet.model.js";
 
 const ExamineeService = {
   FindAll: async (request) => {
@@ -105,11 +115,10 @@ const ExamineeService = {
         exam_result_id: true,
         examinee_id: true,
         examinee_name: true,
+        exam_category: true,
         examinee_exam_results: true,
         examinee_exam_fouls: true,
         examinee_exam_status: true,
-        start_at: true,
-        finished_at: true,
       },
     });
 
@@ -163,15 +172,21 @@ const ExamineeService = {
 
     if (!existingExaminee) ThrowError(400, "Process stopped or failed");
 
-    // Update Examinee Result (ongoing & start_at)
+    // Update Examinee Result (ongoing)
 
     const existingExamineeResult = await ExamineeResultsModel.findFirst({
       where: {
         examinee_id: startExamRequest.params.examinee_id,
         exam_event_name: startExamRequest.params.exam_event_name,
+        exam_category: startExamRequest.params.exam_category,
       },
       select: {
         exam_result_id: true,
+        examinee_sheet_id: true,
+        examinee_id: true,
+        exam_event_name: true,
+        exam_category: true,
+        exam_sub_category: true,
       },
     });
 
@@ -182,25 +197,137 @@ const ExamineeService = {
         exam_result_id: existingExamineeResult.exam_result_id,
         examinee_id: startExamRequest.params.examinee_id,
         exam_event_name: startExamRequest.params.exam_event_name,
+        exam_category: startExamRequest.params.exam_category,
       },
       data: {
-        start_at: startExamRequest.datas.start_at,
         examinee_exam_status: "ongoing",
       },
     });
 
     if (!updateExamineeResult) ThrowError(400, "Process stopped or failed");
 
-    // Load Exam Package
-    const examPackage = await ExamPackageModel.findUnique({
+    // Load Exam Questions
+    const examQuetions = await ExamQuestionModel.findMany({
       where: {
-        exam_package_name: startExamRequest.params.exam_package_id,
+        exam_category: updateExamineeResult.exam_category,
+        exam_sub_category: updateExamineeResult.exam_sub_category,
+      },
+      select: {
+        id: true,
+        exam_type: true,
+        answers: true,
+        exam_sub_category: true,
+        exam_category: true,
+        question: true,
       },
     });
-    console.debug(startExamRequest);
-    console.debug(examPackage);
 
-    // Register Exam Sheet
+    // Set Start Time (Examinee Sheet)
+    const setStartExamSheet = await ExamSheetsModel.update({
+      where: {
+        examinee_sheet_id: existingExamineeResult.examinee_sheet_id,
+        examinee_id: existingExamineeResult.examinee_id,
+        exam_event_name: existingExamineeResult.exam_event_name,
+        exam_category: existingExamineeResult.exam_category,
+        exam_sub_category: existingExamineeResult.exam_sub_category,
+      },
+      data: {
+        start_at: new Date().toISOString(),
+        examinee_exam_status: "ongoing",
+      },
+      select: {
+        examinee_sheet_id: true,
+        exam_event_name: true,
+        examinee_id: true,
+        examinee_name: true,
+        examinee_exam_sheet: true,
+        exam_category: true,
+        exam_sub_category: true,
+        examinee_exam_status: true,
+        finished_at: true,
+        start_at: true,
+      },
+    });
+
+    if (!setStartExamSheet) ThrowError(400, "Process stopped or failed");
+
+    const results = await ExamineeExamQuestionsResponse(
+      setStartExamSheet,
+      examQuetions
+    );
+
+    return results;
+  },
+
+  SubmitExam: async (request) => {
+    request = SubmitExamRequest(request);
+    const submitExamRequest = await Validation.validation(
+      ExamineesValidation.SUBMIT_EXAM,
+      request
+    );
+
+    // Check Examinee ID Valid
+    const isValidId = await IdHandler.verify(request.params.examinee_id);
+
+    if (!isValidId) ThrowError(400, "Process stopped or failed");
+
+    //  Store Exam Sheets
+    const existingExamineeExamSheet = await ExamSheetsModel.findFirst({
+      where: {
+        examinee_sheet_id: submitExamRequest.datas.examinee_sheet_id,
+        examinee_id: submitExamRequest.datas.examinee_id,
+        examinee_name: submitExamRequest.datas.examinee_name,
+        exam_event_name: submitExamRequest.datas.exam_event_name,
+        exam_category: submitExamRequest.datas.exam_category,
+        exam_sub_category: submitExamRequest.datas.exam_sub_category,
+        start_at: submitExamRequest.datas.start_at,
+        examinee_exam_status: "ongoing",
+      },
+      select: {
+        examinee_sheet_id: true,
+        examinee_id: true,
+        examinee_name: true,
+        exam_event_name: true,
+        exam_category: true,
+        exam_sub_category: true,
+        start_at: true,
+      },
+    });
+
+    if (!existingExamineeExamSheet) {
+      ThrowError(400, "Process stopped or failed");
+    }
+
+    const examineeExamSheet = await ExamSheetsModel.update({
+      where: {
+        ...existingExamineeExamSheet,
+      },
+      data: {
+        examinee_exam_sheet: submitExamRequest.datas.examinee_exam_sheet,
+        examinee_exam_status: true,
+        finished_at: submitExamRequest.datas.finished_at,
+      },
+    });
+
+    if (!examineeExamSheet) ThrowError(400, "Process stopped or failed");
+
+    // Store Exam Results
+    const examineeResult = await ExamineeResultsModel.findFirst({
+      where: {
+        examinee_sheet_id: examineeExamSheet.examinee_sheet_id,
+      },
+    });
+
+    const updateExamineeResult = await ExamineeResultsModel.update({
+      where: {
+        exam_result_id: examineeResult.exam_result_id,
+      },
+      data: {
+        examinee_exam_status: examineeExamSheet.examinee_exam_status,
+      },
+    });
+
+    if (!updateExamineeResult) ThrowError(400, "Process stopped or failed");
   },
 };
 

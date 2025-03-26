@@ -90,3 +90,30 @@ export const GetExamQuestionsResponse = async (exams) => ({
   total_page: Number(exams.totalPage),
   total_datas: Number(exams.totalDatas),
 });
+
+export const ExamineeExamQuestionsResponse = async (
+  examSheets,
+  examQuestions
+) => ({
+  ...examSheets,
+  list: examQuestions.map(
+    ({
+      id,
+      exam_type,
+      exam_category,
+      exam_sub_category,
+      question,
+      answers,
+    }) => ({
+      id,
+      exam_type,
+      exam_category,
+      exam_sub_category,
+      question,
+      examinee_answer: "",
+      ...(exam_type !== "essay" && {
+        answers: answers.map(({ field, label }) => ({ field, label })),
+      }),
+    })
+  ),
+});

@@ -6,7 +6,7 @@ const ExamEventController = {
   createExamEvent: async (request, response) => {
     try {
       const requestTime = new Date().toISOString();
-      request = await FormHandler(request);
+      request = request.body;
       const examEvent = await ExamEventService.Create(request);
       ResponseHandler(response, {
         code: 201,

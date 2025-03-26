@@ -2,12 +2,11 @@ import UserService from "../services/user.service.js";
 
 import ResponseHandler from "../handlers/response.handler.js";
 
-import FormHandler from "../handlers/form.handler.js";
-
 import {
   GetUserRequest,
   UpdateUserRequest,
 } from "../models/mysql/user.model.js";
+import FormHandler from "../handlers/form.handler.js";
 
 const UserController = {
   // createUser: async (request, response) => {

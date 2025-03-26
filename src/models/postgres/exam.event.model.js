@@ -1,4 +1,5 @@
 import Database from "../../app/database.js";
+import QueryParser from "../../utils/query.parser.js";
 import { Mandatory } from "../../utils/types.js";
 
 export const ExamEventModel = Database.postgresClient.examEvent;
@@ -10,11 +11,17 @@ export const CreateExamEventRequest = (request) => ({
     Mandatory(request.exam_package_id, "Exam Package Id")
   ),
   owner: String(Mandatory(request.owner, "Owner")),
-  admins: JSON.parse(Mandatory(request.admins, "Admins")),
-  proctors: JSON.parse(Mandatory(request.proctors, "Proctors")),
-  examinee_categories: JSON.parse(
+  admins: Array.isArray(Mandatory(request.admins, "Admins"))
+    ? request.admins
+    : [],
+  proctors: Array.isArray(Mandatory(request.proctors, "Proctors"))
+    ? request.proctors
+    : [],
+  examinee_categories: Array.isArray(
     Mandatory(request.examinee_categories, "Examinee Category")
-  ),
+  )
+    ? request.examinee_categories
+    : [],
   start_time: new Date(
     Mandatory(request.start_time, "Start Time")
   ).toISOString(),
@@ -50,34 +57,44 @@ export const GetExamEventRequest = (request) => ({
 
 export const UpdateExamEventRequest = (request) => ({
   param: {
-    exam_event_name: String(Mandatory(request.param)),
+    exam_event_name: String(Mandatory(request.params.exam_event_name)),
   },
   datas: {
-    ...(request.request.exam_event_name && {
-      exam_event_name: String(request.request.exam_event_name),
+    ...(request.body.exam_event_name && {
+      exam_event_name: String(request.body.exam_event_name),
     }),
-    ...(request.request.exam_package_id && {
-      exam_package_id: String(request.request.exam_package_id),
+    ...(request.body.exam_package_id && {
+      exam_package_id: String(request.body.exam_package_id),
     }),
-    ...(request.request.owner && {
-      owner: String(request.request.owner),
+    ...(request.body.owner && {
+      owner: String(request.body.owner),
     }),
-    ...(request.request.admins && {
-      admins: JSON.parse(request.request.admins),
+    ...(request.body.admins && {
+      admins: Array.isArray(request.body.admins) ? request.body.admins : [],
     }),
-    ...(request.request.proctors && {
-      proctors: JSON.parse(request.request.proctors),
+    ...(request.body.proctors && {
+      proctors: Array.isArray(request.body.proctors)
+        ? request.body.proctors
+        : [],
     }),
-    ...(request.request.examinee_categories && {
-      examinee_categories: JSON.parse(request.request.examinee_categories),
+    ...(request.body.examinee_categories && {
+      examinee_categories: Array.isArray(request.body.examinee_categories)
+        ? request.body.examinee_categories
+        : [],
     }),
-    ...(request.request.start_time && {
-      start_time: new Date(request.request.start_time).toISOString(),
+    ...(request.body.start_time && {
+      start_time: new Date(request.body.start_time).toISOString(),
     }),
-    ...(request.request.end_time && {
-      end_time: new Date(request.request.end_time).toISOString(),
+    ...(request.body.end_time && {
+      end_time: new Date(request.body.end_time).toISOString(),
     }),
   },
+});
+
+// Admin //
+export const AdminFindExamEventsRequest = (request) => ({
+  admins: String(Mandatory(request.params.adminId, "Admin ID")),
+  ...QueryParser(request),
 });
 
 // RESPONSE //
@@ -88,3 +105,4 @@ export const GetExamEventsResponse = async (examEvents) => ({
   total_page: Number(examEvents.totalPage),
   total_datas: Number(examEvents.totalDatas),
 });
+

@@ -14,10 +14,13 @@ import {
 
 import { ExamineeModel } from "../models/postgres/examinee.model.js";
 import { ExamineeResultsModel } from "../models/postgres/examinee.result.model.js";
+import { ExamSheetsModel } from "../models/postgres/exam.sheet.model.js";
+import { ExamPackageModel } from "../models/postgres/exam.package.model.js";
 
 const ExamEventService = {
   Create: async (request) => {
     request = CreateExamEventRequest(request);
+
     const createExamEventRequest = await Validation.validation(
       ExamEventValidation.CREATE_EXAM_EVENT,
       request
@@ -37,6 +40,16 @@ const ExamEventService = {
       },
     });
 
+    // Get Exam Package
+    const examPackage = await ExamPackageModel.findUnique({
+      where: {
+        exam_package_name: examEvent.exam_package_id,
+      },
+      select: {
+        exam_package_questions: true,
+      },
+    });
+
     // Get Related Examinees
     const examinees = await ExamineeModel.findMany({
       where: {
@@ -44,19 +57,66 @@ const ExamEventService = {
           in: examEvent.examinee_categories,
         },
       },
+      select: {
+        examinee_id: true,
+        examinee_name: true,
+      },
+    });
+
+    const examineeCreateSheets = examinees.flatMap((examinee) =>
+      examPackage.exam_package_questions.map((exam) => ({
+        examinee_id: examinee.examinee_id,
+        examinee_name: examinee.examinee_name,
+        exam_event_name: examEvent.exam_event_name,
+        exam_category: exam.exam_category,
+        exam_sub_category: exam.exam_sub_category,
+      }))
+    );
+
+    // Prepare Examinee Exam Sheets
+    await ExamSheetsModel.createMany({
+      data: examineeCreateSheets,
+    });
+
+    const examineeSheets = await ExamSheetsModel.findMany({
+      where: {
+        exam_event_name: examEvent.exam_event_name,
+        exam_category: {
+          in: examineeCreateSheets.map((sheet) => sheet.exam_category),
+        },
+        exam_sub_category: {
+          in: examineeCreateSheets.map((sheet) => sheet.exam_sub_category),
+        },
+      },
+      select: {
+        examinee_id: true,
+        examinee_name: true,
+        exam_event_name: true,
+        exam_category: true,
+        exam_sub_category: true,
+        examinee_sheet_id: true,
+        examinee_exam_status: true,
+      },
     });
 
     // Prepare Examinee Results
-    const examineeResults = examinees.map((examinee) => ({
-      examinee_id: examinee.examinee_id,
-      examinee_name: examinee.examinee_name,
-      exam_event_name: examEvent.exam_event_name,
+    const examineeResults = examineeSheets.map((examineeSheet) => ({
+      examinee_sheet_id: examineeSheet.examinee_sheet_id,
+      examinee_id: examineeSheet.examinee_id,
+      examinee_name: examineeSheet.examinee_name,
+      exam_event_name: examineeSheet.exam_event_name,
+      examinee_exam_status: examineeSheet.examinee_exam_status,
+      exam_category: examineeSheet.exam_category,
+      exam_sub_category: examineeSheet.exam_sub_category,
     }));
 
     // Create Examinee Results
-    const prepareExamineeResults = await ExamineeResultsModel.createMany({ data: examineeResults });
+    const prepareExamineeResults = await ExamineeResultsModel.createMany({
+      data: examineeResults,
+    });
 
-    if (prepareExamineeResults.count === 0) ThrowError(400, "Failed to prepare examinee results")
+    if (prepareExamineeResults.count === 0)
+      ThrowError(400, "Failed to prepare examinee results");
 
     return examEvent;
   },
